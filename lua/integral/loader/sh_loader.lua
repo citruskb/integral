@@ -35,8 +35,8 @@ local SKIP = 4
 
 -- When we load this file, gm.FolderName returns nil. If we're loading a gamemode, it'll return the gamemode name
 -- if we want to load files in other gamemodes we need to run this function there beforehand.
-function SetLoaderRoot(str) loader_root = str end
-function GamemodeLoaderRoot(g) SetLoaderRoot(g.FolderName .. "/gamemode/") end
+function SetLoaderRoot(str) loader_root = str .. "/" end
+function GamemodeLoaderRoot(g) SetLoaderRoot(g.FolderName .. "/gamemode") end
 
 local SERVERSIDE_PREFIX = "sv"
 local CLIENTSIDE_PREFIX = "cl"

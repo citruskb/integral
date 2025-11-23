@@ -1,0 +1,1 @@
+function math.Remainder(num) return num - math.Truncate(num) end

@@ -1,5 +1,5 @@
 local meta_emitter = FindMetaTable("CLuaEmitter")
-local OldEmitterAdd = meta_emitter.Add
+local EmitterAdd = meta_emitter.Add
 
 local meta_p = FindMetaTable("CLuaParticle")
 local PaSetAirResistance =		meta_p.SetAirResistance
@@ -31,8 +31,8 @@ local PaSetVelocityScale =		meta_p.SetVelocityScale
 local Rawget = Rawget
 local CurTime = CurTime
 
-local function NewEmitterAdd(emitter, mat, pos, data)
-	local p = OldEmitterAdd(emitter, mat, pos)
+local function EmitterAddData(emitter, mat, pos, data)
+	local p = EmitterAdd(emitter, mat, pos)
 	if not data or not p then return p end
 
 	local air_res =			Rawget(data, "air_res")				if air_res then			PaSetAirResistance(p, air_res) end
@@ -74,4 +74,4 @@ local function NewEmitterAdd(emitter, mat, pos, data)
 
 	return p
 end
-meta_emitter.Add = NewEmitterAdd
+meta_emitter.AddData = EmitterAddData

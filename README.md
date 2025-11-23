@@ -18,13 +18,13 @@ Use `util.CopyColor(col)` to return a new color object with the same r, g, b, an
 Use `util.ColorModulate(col)` to return the r, g, b of col as three separate values. <br />
 Use `util.ModulateColor(r, g, b)` to return a new color with respective r, g, b. <br />
 
-**Emitter.Add() adjusted** <br />
-Accepts a table as its third argument that will automatically adjust the particle created based on its values. <br />
-See cl_emitter.lua for more details. <br />
-
 **Player validation library** <br />
 Use `IsValidPlayer(obj)` to check if obj is a valid player. <br />
 Use `IsValidLivingPlayer(obj)` to check if obj is a valid living player. <br />
+
+**Emitter library extension** <br />
+Use `Emitter.AddData()` to add a particle based on the passed data table. <br />
+See cl_emitter.lua for more details. <br />
 
 **Math library extension** <br />
 Use `math.Remainder(num)` to return only the decimal part of a number. <br />

@@ -2,6 +2,10 @@
 
 ### A collection of helpful frameworks, functions, and extensions for glua along with adding support for my personal glua standard
 
+**Sprayfix library** <br />
+Default gmod spray system is exploitable to crash other users. <br />
+Server double checks sprays and prevents abuse. <br />
+
 **Class library** <br />
 Use `Class:Create("ClassName")` to create a class. <br />
 This functions similarly to classes in other languages and allows for flexible and useful object-oriented behavior. <br />

@@ -16,8 +16,7 @@ local SPRAYFIX_FOLDER = "sprayfix"
 local SPRAYFIX_CACHE_NAME = "cache"
 
 -- When should cached sprays be removed?
-local DAY = 86400
-local SPRAYFIX_CACHE_EXPIRED = DAY * 60
+local SPRAYFIX_CACHE_EXPIRED = 600 -- Ten minutes.
 
 -- How far should we let people spray from themselves?
 local SPRAYFIX_RANGE = 128

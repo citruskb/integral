@@ -37,9 +37,16 @@ function handshake.Failed(pl, code)
 	hook.Run("HandshakeFailure", code)
 end
 
+function handshake.SignToken(pl, clientToken)
+	local success = pl:GetToken() == clientToken
+	pl:BurnToken()
+	return success
+end
+
 local meta = FindMetaTable("Player")
 function meta:SetToken(str)
 	self:SetDTString(DT_PLAYER_STR_TOKEN, str)
 end
 function meta:GetToken() return self:GetDTString(DT_PLAYER_STR_TOKEN) end
 function meta:BurnToken() self:SetToken(BURNED_TOKEN) end
+function meta:SignToken(clientToken) handshake.SignToken(self, clientToken) end

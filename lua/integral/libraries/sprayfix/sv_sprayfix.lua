@@ -141,6 +141,8 @@ net.Receive("sprayfix_try", function(len, pl)
 
 	-- If it's not cached we need to request it be evaluated!
 	if not sprayfix:CachedHash(hash) then
+		handshake.NewToken(pl)
+
 		net.Start("sprayfix_evaluate")
 		net.Send(pl)
 		return
@@ -154,7 +156,12 @@ net.Receive("sprayfix_try", function(len, pl)
 end)
 
 net.Receive("sprayfix_deliver", function(len, pl)
+	local token = net.ReadString()
+
 	local valid, hash = net.ReadBool(), net.ReadString()
+
+	-- Hard stop if we fail to sign our token.
+	if not handshake.SignToken(token) then return end
 
 	-- Spray if it's valid.
 	if valid then sprayfix:PlayerSpray(pl) end

@@ -58,6 +58,7 @@ net.Receive("sprayfix_evaluate", function(len)
 
 	local hash = util.SHA256(sprayfixData)
 	net.Start("sprayfix_deliver")
+		net.WriteString(MySelf:GetToken())
 		net.WriteBool(validity)
 		net.WriteString(hash)
 	net.SendToServer()

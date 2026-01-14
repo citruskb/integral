@@ -14,6 +14,7 @@
 HANDSHAKE_FAILURE_DUPLICATE_TOKEN = 1		-- Tried to gen new token before old one was burned!
 HANDSHAKE_FAILURE_BURNED_TOKEN = 2			-- Tried to handshake a burned token!
 HANDSHAKE_FAILURE_MISMATCH = 3				-- Tried to handshake and SV token doesn't match CL token!
+HANDSHAKE_FAILURE_MALFORMED_TOKEN = 4		-- Clear sign of tampering. Token is in a nonstandard form!
 
 DT_PLAYER_STR_TOKEN = 0
 __tokens = {}

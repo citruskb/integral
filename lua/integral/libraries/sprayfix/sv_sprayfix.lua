@@ -27,9 +27,9 @@ function sprayfix:CreateDir()
 	if not file.Exists(SPRAYFIX_FOLDER, "DATA") then file.CreateDir(SPRAYFIX_FOLDER) end
 end
 
-function sprayfix:AddToCache(data, valid)
+function sprayfix:AddToCache(hash, valid)
 	local tab = {creation = os.Time(), valid = valid}
-	sprayfixCache[util.SHA256(data)] = tab
+	sprayfixCache[hash] = tab
 	sprayfixCacheDirty = true
 end
 
@@ -139,9 +139,9 @@ end)
 net.Receive("sprayfix_try", function(len, pl)
 	local hash = net.ReadString()
 
-	-- If it's not cached we need to request it from them for evaluation!
+	-- If it's not cached we need to request it be evaluated!
 	if not sprayfix:CachedHash(hash) then
-		net.Start("sprayfix_request")
+		net.Start("sprayfix_evaluate")
 		net.Send(pl)
 		return
 	end
@@ -154,19 +154,16 @@ net.Receive("sprayfix_try", function(len, pl)
 end)
 
 net.Receive("sprayfix_deliver", function(len, pl)
-	local data = util.Decompress(net.ReadData(len / 8))
-
-	-- Credits to Ed for this method of checking for malicious sprays.
-	local valid = sprayfix:ValidData(data)
+	local valid, hash = net.ReadBool(), net.ReadString()
 
 	-- Spray if it's valid.
 	if valid then sprayfix:PlayerSpray(pl) end
 
 	-- Add it to the cache.
-	sprayfix:AddToCache(data, valid)
+	sprayfix:AddToCache(hash, valid)
 end)
 
 util.AddNetworkString("sprayfix_listen")
 util.AddNetworkString("sprayfix_try")
-util.AddNetworkString("sprayfix_request")
+util.AddNetworkString("sprayfix_evaluate")
 util.AddNetworkString("sprayfix_deliver")

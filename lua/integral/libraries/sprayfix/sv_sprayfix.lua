@@ -1,3 +1,9 @@
+--[[
+		This exists to discourage random idiots from crashing others with malicious sprays.
+		I'm aware there are ways around this.
+		The point of it isn't a foolproof system.
+]]
+
 local sprayfix = {}
 
 if not sprayfixCache then
@@ -105,6 +111,8 @@ function sprayfix:PlayerSpray(pl)
 	local startPos, endPos = eyepos, eyepos + aimvec * SPRAYFIX_RANGE
 	if not util.TraceLine({start = startPos, endpos = endPos, mask = MASK_SOLID_BRUSHONLY}).Hit then return end
 
+	-- TODO: Double check that player spray path hasn't changed.
+
 	pl:SprayDecal(startPos, endPos)
 	pl:EmitSound("SprayCan.Paint")
 	sprayfixCooldowns[pl] = ct + SPRAYFIX_COOLDOWN
@@ -158,6 +166,7 @@ net.Receive("sprayfix_deliver", function(len, pl)
 	sprayfix:AddToCache(data, valid)
 end)
 
+util.AddNetworkString("sprayfix_listen")
 util.AddNetworkString("sprayfix_try")
 util.AddNetworkString("sprayfix_request")
 util.AddNetworkString("sprayfix_deliver")

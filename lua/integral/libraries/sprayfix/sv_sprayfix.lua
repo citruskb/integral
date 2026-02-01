@@ -142,8 +142,12 @@ net.Receive("sprayfix_try", function(len, pl)
 	if not sprayfix:CachedHash(hash) then
 		handshake.NewToken(pl)
 
-		net.Start("sprayfix_evaluate")
-		net.Send(pl)
+		-- Gives time for the handshake to be passed to the player.
+		timer.Simple(0.1, function()
+			if not IsValid(pl) then return end
+			net.Start("sprayfix_evaluate")
+			net.Send(pl)
+		end)
 		return
 	end
 
@@ -160,7 +164,7 @@ net.Receive("sprayfix_deliver", function(len, pl)
 	local valid, hash = net.ReadBool(), net.ReadString()
 
 	-- Hard stop if we fail to sign our token.
-	if not handshake.SignToken(token) then return end
+	if not pl:SignToken(token) then return end
 
 	-- Spray if it's valid.
 	if valid then sprayfix:PlayerSpray(pl) end

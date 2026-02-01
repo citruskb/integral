@@ -7,7 +7,7 @@ local sprayfixData = ""
 
 function sprayfix:GetFlags()
 	-- VTF Flags offset
-	local f = file.Open(sprayfix:GetSprayPath(), "rb", "DATA")
+	local f = file.Open(sprayfix:GetSprayPath(), "rb", "MOD")
 	f:Seek(0x14)
 	local flags = f:ReadULong() or 0
 	f:Close()

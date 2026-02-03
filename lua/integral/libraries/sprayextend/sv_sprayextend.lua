@@ -98,16 +98,21 @@ function sprayex:PlayerSpray(pl, hex)
 	sprayexCooldowns[pl] = ct + SPRAYEX_COOLDOWN
 
 	-- Pass information about this spray to other clients.
-	sprayexInfo[pl] = tr.HitPos
-	sprayexInfo[pl] = {["pos"] = tr.HitPos, ["hex"] = hex, ["nick"] = pl:Nick(), ["steamid"] = pl:SteamID(), ["pl"] = pl}
-	sprayex.UpdateInfo(pl)
+	local idx = pl:EntIndex()
+	sprayexInfo[idx] = tr.HitPos
+	sprayexInfo[idx] = {["pos"] = tr.HitPos, ["hex"] = hex, ["nick"] = pl:Nick(), ["steamid"] = pl:SteamID(), ["idx"] = pl:EntIndex()}
+
+	sprayex.UpdateInfo(idx)
 
 	hook.Run("SprayexPlayerSpray", pl, hex .. ".vtf")
 end
 
-function sprayex.UpdateInfo(pl, netTarget)
+function sprayex.UpdateInfo(idx, netTarget)
+	local tab = sprayexInfo[idx]
+	if not tab then return end
+
 	net.Start("sprayex_updateinfo")
-		net.WriteTable(sprayexInfo[pl])
+		net.WriteTable(tab)
 	if IsValidPlayer(netTarget) then net.Send(netTarget) else net.Broadcast() end
 end
 

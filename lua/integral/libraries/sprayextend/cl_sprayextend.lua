@@ -1,9 +1,29 @@
--- Save the location of active sprays.
+local CSS_SPRAY_PATH = table.ToAssoc({
+	"materials/vgui/logos/spray_bullseye.vtf",
+	"materials/vgui/logos/spray_crosshairs.vtf",
+	"materials/vgui/logos/spray_crybaby.vtf",
+	"materials/vgui/logos/spray_elited.vtf",
+	"materials/vgui/logos/spray_flashbanged.vtf",
+	"materials/vgui/logos/spray_grenaded.vtf",
+	"materials/vgui/logos/spray_headshot.vtf",
+	"materials/vgui/logos/spray_insights.vtf",
+	"materials/vgui/logos/spray_kamikazi.vtf",
+	"materials/vgui/logos/spray_kilroy.vtf",
+	"materials/vgui/logos/spray_knifed.vtf",
+	"materials/vgui/logos/spray_nobombs.vtf",
+	"materials/vgui/logos/spray_nosmoking.vtf",
+	"materials/vgui/logos/spray_nowar.vtf",
+	"materials/vgui/logos/spray_touchdown.vtf",
+})
+
+-- Save info on active sprays.
 if not sprayexInfo then sprayexInfo = {} end
 
 local sprayex = {}
 
-function sprayex:GetSprayPath() return GetConVar("cl_logofile"):GetString() end
+function sprayex:GetSprayPath()
+	return GetConVar("cl_logofile"):GetString()
+end
 
 local sprayexPath = ""
 local sprayexData = ""
@@ -42,6 +62,11 @@ hook.Add("PlayerBindPress", "PlayerBindPress.sprayex", function(ply, bind)
 		sprayexHex = scrc32.GetHex(sprayexData)
 	end
 
+	-- Hard stop if it's a default spray.
+	-- Would allow, but can't figure out how to get at the raw default spray files with file.Read
+	-- I could rip them and add it in a content pack just to point to it.. but nah, that's a bit too annoying.
+	if CSS_SPRAY_PATH[sprayexPath] then return end
+
 	net.Start("sprayex_try")
 		net.WriteString(sprayexHex)
 	net.SendToServer()
@@ -69,20 +94,34 @@ end)
 
 net.Receive("sprayex_updateinfo", function(len)
 	local tab = net.ReadTable()
-	local pl = tab.pl
+	local pl = Entity(tab.idx)
 	if not IsValidPlayer(pl) then return end
 
-	-- Check if we already have an index for this player. If so, update it.
-	-- Otherwise, just add a new index.
-	local idx = #sprayexInfo + 1
-	for k, data in pairs(sprayexInfo) do
-		if not IsValidPlayer(data.pl) then continue end
-		if data.pl ~= pl then continue end
-
-		-- Data found!
-		idx = k
-		break
+	-- Check if we have this spray loaded already. If not, make a material for it.
+	-- Useful for say, a spray previewer/viewer.
+	local sameSpray
+	if sprayexInfo[tab.idx] then
+		sameSpray = sprayexInfo[tab.idx].hex == tab.hex
 	end
 
-	sprayexInfo[idx] = tab
+	if sameSpray then
+		tab.mat = sprayexInfo[tab.idx].mat
+	else
+		tab.mat = CreateMaterial("spray_" .. tab.hex .. ToString(os.time()), "UnlitGeneric", {
+			["$basetexture"] = string.Format("../materials/temp/%s.vtf", tab.hex),
+			["$translucent"] = 1,
+			["$vertexalpha"] = 1,
+			["$vertexcolor"] = 1,
+			["$decalscale"] = 1,
+			["Proxies"] = {
+				["AnimatedTexture"] = {
+					["animatedTextureVar"] = "$basetexture",
+					["animatedTextureFrameNumVar"] = "$frame",
+					["animatedTextureFrameRate"] = ToString(12),
+				}
+			}
+		})
+	end
+
+	sprayexInfo[tab.idx] = tab
 end)

@@ -154,7 +154,7 @@ net.Receive("sprayex_try", function(len, pl)
 	if not sprayex:ValidHex(hex) then return end
 
 	-- We've checked it before, we know it's good!
-	sprayex:PlayerSpray(pl)
+	sprayex:PlayerSpray(pl, hex)
 end)
 
 net.Receive("sprayex_deliver", function(len, pl)

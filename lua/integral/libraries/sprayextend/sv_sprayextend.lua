@@ -1,7 +1,7 @@
 --[[
-		This exists to discourage random idiots from crashing others with malicious sprays.
-		I'm aware there are ways around this.
-		The point of it isn't a foolproof system.
+	This exists to discourage random idiots from crashing others with malicious sprays.
+	I'm aware there are ways around this.
+	The point of it isn't a foolproof system.
 ]]
 
 local sprayex = {}
@@ -66,35 +66,6 @@ function sprayex:PruneCache()
 	end
 
 	return shouldSave
-end
-
-function sprayex:GetFlags(data)
-	local fileName = util.SHA256(data) .. ".vtf"
-	local fileLoc = SPRAYEX_FOLDER .. "/" .. fileName
-	file.Write(fileLoc, data)
-
-	-- VTF Flags offset
-	local f = file.Open(fileLoc, "rb", "DATA")
-	f:Seek(0x14)
-	local flags = f:ReadULong() or 0
-	f:Close()
-
-	file.Delete(fileLoc)
-
-	return flags
-end
-
-function sprayex:ValidData(data)
-	local flags = self:GetFlags(data)
-
-	-- mask out malicious flags
-	-- Normal Map  | Render Target | Depth Render Target |  No Depth Buffer | SSBump
-	local mask = 0x0080 + 0x8000 + 0x10000 + 0x800000 + 0x8000000 + 0x0800
-	local maskedFlags = bit.band(mask, flags)
-
-	if maskedFlags > 0 then return false end
-
-	return true
 end
 
 function sprayex:CachedHex(hex)

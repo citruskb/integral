@@ -2,6 +2,10 @@
 	This exists to discourage random idiots from crashing others with malicious sprays.
 	I'm aware there are ways around this.
 	The point of it isn't a foolproof system.
+
+	Fires the hook: SprayexPlayerSpray(pl, fileName) whenever someone successfully sprays.
+	pl is the player who sprayed.
+	fileName is the temp folder filename of the spray.
 ]]
 
 local sprayex = {}
@@ -77,7 +81,7 @@ end
 
 function sprayex:ValidHex(hex) return sprayexCache[hex].valid end
 
-function sprayex:PlayerSpray(pl)
+function sprayex:PlayerSpray(pl, hex)
 	local ct = CurTime()
 	if (sprayexCooldowns[pl] or 0) > ct then return end
 
@@ -88,13 +92,23 @@ function sprayex:PlayerSpray(pl)
 	local tr = util.TraceLine({start = startPos, endpos = endPos, mask = MASK_SOLID_BRUSHONLY})
 	if not tr.Hit then return end
 
-	-- TODO: Double check that player spray path hasn't changed.
-
 	pl:SprayDecal(startPos, endPos)
 	pl:EmitSound("SprayCan.Paint")
 
 	sprayexCooldowns[pl] = ct + SPRAYEX_COOLDOWN
+
+	-- Pass information about this spray to other clients.
 	sprayexInfo[pl] = tr.HitPos
+	sprayexInfo[pl] = {["pos"] = tr.HitPos, ["hex"] = hex, ["nick"] = pl:Nick(), ["steamid"] = pl:SteamID(), ["pl"] = pl}
+	sprayex.UpdateInfo(pl)
+
+	hook.Run("SprayexPlayerSpray", pl, hex .. ".vtf")
+end
+
+function sprayex.UpdateInfo(pl, netTarget)
+	net.Start("sprayex_updateinfo")
+		net.WriteTable(sprayexInfo[pl])
+	if IsValidPlayer(netTarget) then net.Send(netTarget) else net.Broadcast() end
 end
 
 -- HOOKS, TIMERS, & NETWORKING --
@@ -106,7 +120,12 @@ hook.Add("Initialize", "Initialize.sprayex", function()
 end)
 
 -- Disable default spray functionality.
-hook.Add("PlayerSpray", "PlayerSpray.sprayex", function(ply) return true end)
+hook.Add("PlayerSpray", "PlayerSpray.sprayex", function(pl) return true end)
+
+-- Send spray info to players who join.
+hook.Add("PlayerReady", "PlayerReady.sprayex", function(pl)
+	for other, _ in pairs(sprayexInfo) do sprayex.UpdateInfo(other, pl) end
+end)
 
 timer.Create("sprayex_save", 12, 0, function()
 	if not sprayexCacheDirty then return end
@@ -147,7 +166,7 @@ net.Receive("sprayex_deliver", function(len, pl)
 	if not pl:SignToken(token) then return end
 
 	-- Spray if it's valid.
-	if valid then sprayex:PlayerSpray(pl) end
+	if valid then sprayex:PlayerSpray(pl, hex) end
 
 	-- Add it to the cache.
 	sprayex:AddToCache(hex, valid)

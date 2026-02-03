@@ -1,3 +1,6 @@
+-- Save the location of active sprays.
+if not sprayexInfo then sprayexInfo = {} end
+
 local sprayex = {}
 
 function sprayex:GetSprayPath() return GetConVar("cl_logofile"):GetString() end
@@ -62,4 +65,24 @@ net.Receive("sprayex_evaluate", function(len)
 		net.WriteBool(validity)
 		net.WriteString(sprayexHex)
 	net.SendToServer()
+end)
+
+net.Receive("sprayex_updateinfo", function(len)
+	local tab = net.ReadTable()
+	local pl = tab.pl
+	if not IsValidPlayer(pl) then return end
+
+	-- Check if we already have an index for this player. If so, update it.
+	-- Otherwise, just add a new index.
+	local idx = #sprayexInfo + 1
+	for k, data in pairs(sprayexInfo) do
+		if not IsValidPlayer(data.pl) then continue end
+		if data.pl ~= pl then continue end
+
+		-- Data found!
+		idx = k
+		break
+	end
+
+	sprayexInfo[idx] = tab
 end)

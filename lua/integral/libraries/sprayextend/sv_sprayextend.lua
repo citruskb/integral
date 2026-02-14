@@ -97,12 +97,11 @@ function sprayex:PlayerSpray(pl, hex)
 
 	sprayexCooldowns[pl] = ct + SPRAYEX_COOLDOWN
 
-	-- Pass information about this spray to other clients.
+	-- Pass information about this spray to other clients, after a brief delay.
 	local idx = pl:EntIndex()
 	sprayexInfo[idx] = tr.HitPos
 	sprayexInfo[idx] = {["pos"] = tr.HitPos, ["hex"] = hex, ["nick"] = pl:Nick(), ["steamid"] = pl:SteamID(), ["idx"] = pl:EntIndex()}
-
-	sprayex.UpdateInfo(idx)
+	timer.Simple(1, function() sprayex.UpdateInfo(idx) end)
 
 	hook.Run("SprayexPlayerSpray", pl, hex .. ".vtf")
 end
@@ -128,9 +127,11 @@ end)
 hook.Add("PlayerSpray", "PlayerSpray.sprayex", function(pl) return true end)
 
 -- Send spray info to players who join.
+--[[ TODO: I don't know if this actually works... I don't think players download/load existing sprays on join by default.
 hook.Add("PlayerReady", "PlayerReady.sprayex", function(pl)
 	for other, _ in pairs(sprayexInfo) do sprayex.UpdateInfo(other, pl) end
 end)
+]]
 
 timer.Create("sprayex_save", 12, 0, function()
 	if not sprayexCacheDirty then return end

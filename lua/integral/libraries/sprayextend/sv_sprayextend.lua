@@ -92,17 +92,23 @@ function sprayex:PlayerSpray(pl, hex)
 	local tr = util.TraceLine({start = startPos, endpos = endPos, mask = MASK_SOLID_BRUSHONLY})
 	if not tr.Hit then return end
 
-	pl:SprayDecal(startPos, endPos)
-	pl:EmitSound("SprayCan.Paint")
-
-	sprayexCooldowns[pl] = ct + SPRAYEX_COOLDOWN
-
-	-- Pass information about this spray to other clients, after a brief delay.
 	local idx = pl:EntIndex()
-	sprayexInfo[idx] = tr.HitPos
-	sprayexInfo[idx] = {["pos"] = tr.HitPos, ["hex"] = hex, ["nick"] = pl:Nick(), ["steamid"] = pl:SteamID(), ["idx"] = pl:EntIndex()}
-	timer.Simple(1, function() sprayex.UpdateInfo(idx) end)
+	local function ApplySpray()
+		if not IsValid(pl) then return end
+		pl:SprayDecal(startPos, endPos)
+		sprayexInfo[idx] = tr.HitPos
+		sprayexInfo[idx] = {["pos"] = tr.HitPos, ["hex"] = hex, ["nick"] = pl:Nick(), ["steamid"] = pl:SteamID(), ["idx"] = pl:EntIndex()}
+		sprayex.UpdateInfo(idx)
+	end
 
+	-- We apply it so the person spraying and anyone with the spray downloaded already sees it immediately.
+	ApplySpray()
+
+	-- We repeat the application attempt to make sure it has time to upload to the server, then download to clients.
+	timer.Simple(SPRAYEX_COOLDOWN * 0.25, ApplySpray)
+
+	pl:EmitSound("SprayCan.Paint")
+	sprayexCooldowns[pl] = ct + SPRAYEX_COOLDOWN
 	hook.Run("SprayexPlayerSpray", pl, hex .. ".vtf")
 end
 

@@ -99,12 +99,12 @@ net.Receive("sprayex_updateinfo", function(len)
 
 	-- Check if we have this spray loaded already. If not, make a material for it.
 	-- Useful for say, a spray previewer/viewer.
-	local sameSpray
+	local sameValidSpray
 	if sprayexInfo[tab.idx] then
-		sameSpray = sprayexInfo[tab.idx].hex == tab.hex
+		sameValidSpray = sprayexInfo[tab.idx].hex == tab.hex and not sprayexInfo[tab.idx].mat:IsError()
 	end
 
-	if sameSpray then
+	if sameValidSpray then
 		tab.mat = sprayexInfo[tab.idx].mat
 	else
 		tab.mat = CreateMaterial("spray_" .. tab.hex .. ToString(os.time()), "UnlitGeneric", {

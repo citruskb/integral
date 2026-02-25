@@ -64,6 +64,23 @@ function table.Filter(tab, Predicate)
 	return filtered
 end
 
+function table.DeepCopy(tab)
+	local copy = {}
+	for k, v in pairs(tab) do
+		if (type(v) == "table") then
+			res[k] = table.DeepCopy(v)
+		elseif (type(v) == "Vector") then
+			res[k] = Vector(v.x, v.y, v.z)
+		elseif (type(v) == "Angle") then
+			res[k] = Angle(v.p, v.y, v.r)
+		else
+			res[k] = v
+		end
+	end
+
+	return copy
+end
+
 function table.FilterSeq(tab, Predicate)
 	local filtered = {}
 	for k, v in pairs(tab) do

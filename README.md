@@ -45,6 +45,7 @@ Use `table.Map(tab, Callback)` to return a new table containing all the key valu
 Use `table.MapSeq(tab, Callback)` to return a new sequential table containing all the return values from Callback(k, v) on every k, v pair in tab. <br />
 Use `table.Filter(tab, Predicate)` to return a new table only containing the k, v pairs of which Predicate(k, v) returns true. <br />
 Use `table.FilterSeq(tab, Predicate)` to return a new sequential table containing the values of which Predicate(k, v) returns true. <br />
+Use `table.DeepCopy(tab)` to return a new table containing the values of the old table, including new vectors and angles. <br />
 Use `table.Mirror(tab)` to return a new table with the same k, v pairs. <br />
 Use `table.IsIdentical(tab1, tab2)` to return if tab1 is functionally the same as tab2. <br />
 Use `table.Distrubute(data)` to distrubute the workload of expensive operations over time. <br />

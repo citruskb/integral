@@ -68,13 +68,13 @@ function table.DeepCopy(tab)
 	local copy = {}
 	for k, v in pairs(tab) do
 		if (type(v) == "table") then
-			res[k] = table.DeepCopy(v)
+			copy[k] = table.DeepCopy(v)
 		elseif (type(v) == "Vector") then
-			res[k] = Vector(v.x, v.y, v.z)
+			copy[k] = Vector(v.x, v.y, v.z)
 		elseif (type(v) == "Angle") then
-			res[k] = Angle(v.p, v.y, v.r)
+			copy[k] = Angle(v.p, v.y, v.r)
 		else
-			res[k] = v
+			copy[k] = v
 		end
 	end
 

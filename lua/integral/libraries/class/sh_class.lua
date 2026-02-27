@@ -217,3 +217,11 @@ function Class:Create(super, meta_name)
 
 	return class
 end
+
+
+function AccessorFuncClassVar(tab, name)
+	local internalName = "_" .. string.Lower(name)
+
+	tab["Set" .. name] = function(me, var) Rawset(me, internalName, var) end
+	tab["Get" .. name] = function(me) return Rawget(me, internalName) end
+end

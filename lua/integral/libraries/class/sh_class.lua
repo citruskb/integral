@@ -41,11 +41,11 @@ function Class:Create(super, meta_name)
 	end
 
 	-- When trying call as a function (ie. obj())
-	function meta:__call()
+	function meta:__call(...)
 		if self.Call then
-			return self:Call()
+			return self:Call(...)
 		elseif super then
-			return super.meta.__call(self)
+			return super.meta.__call(self, ...)
 		else
 			error("Class has no Call() func.")
 		end

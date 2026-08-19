@@ -49,6 +49,7 @@ Use `table.DeepCopy(tab)` to return a new table containing the values of the old
 Use `table.Mirror(tab)` to return a new table with the same k, v pairs. <br />
 Use `table.IsIdentical(tab1, tab2)` to return if tab1 is functionally the same as tab2. <br />
 Use `table.Distrubute(data)` to distrubute the workload of expensive operations over time. <br />
+Use `table.Select(n, tab)` to return a new sequential table with n random unique values from tab. <br />
 
 **Various minor performance improvements that shouldn't break many addons or gamemodes** <br />
 

@@ -183,3 +183,23 @@ function table.Distribute(data)
 
 	return interval + ENGINE_TICK -- Add a extra frame to buffer the end.
 end
+
+-- Return n random values from table tab as a new sequential table.
+function table.Select(n, tab)
+	local count = table.Count(tab)
+	if n > count then Error("table.Select out of bounds!") end
+	if n < 0 then return end
+
+	local ret = {}
+	local mirror = table.Mirror(tab)
+	local toPull = n
+	while toPull > 0 do
+		local val, idx = table.Random(mirror)
+		table.Insert(ret, val)
+		table.Remove(mirror, idx)
+
+		toPull = toPull - 1
+	end
+
+	return ret
+end
